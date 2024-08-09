@@ -1,11 +1,6 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import {
-  Ctx,
-  MessagePattern,
-  NatsContext,
-  Payload,
-} from '@nestjs/microservices';
+import { Ctx, MessagePattern, NatsContext } from '@nestjs/microservices';
 
 @Controller()
 export class AppController {
@@ -16,8 +11,15 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @MessagePattern('notifications')
-  getNotifications(@Payload() data: number[], @Ctx() context: NatsContext) {
+  @MessagePattern('get-all-cat')
+  getAllCat(@Ctx() context: NatsContext) {
     console.log(`Subject: ${context.getSubject()}`);
+    const cats = [
+      {
+        id: 1,
+        name: 'TOM',
+      },
+    ];
+    return cats;
   }
 }

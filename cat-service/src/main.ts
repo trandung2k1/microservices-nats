@@ -15,7 +15,7 @@ async function bootstrap() {
       servers: ['nats://localhost:4222'],
       user: 'nats',
       pass: '123456789',
-      // queue: 'cats_queue',
+      queue: 'cat_queue',
     },
   });
   await app.startAllMicroservices();
