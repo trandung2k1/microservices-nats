@@ -1,22 +1,16 @@
 import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
+import { NatsJetStreamTransport } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
 
 @Module({
   imports: [
-    ClientsModule.register([
-      {
-        name: 'CAT_SERVICE',
-        transport: Transport.NATS,
-        options: {
-          servers: ['nats://localhost:4222'],
-          queue: 'cat_queue',
-          user: 'nats',
-          pass: '123456789',
-        },
+    NatsJetStreamTransport.register({
+      connectionOptions: {
+        servers: 'localhost:4222',
+        name: 'cat-publisher',
       },
-    ]),
+    }),
   ],
   controllers: [AppController],
   providers: [AppService],

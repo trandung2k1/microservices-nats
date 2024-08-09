@@ -1,6 +1,12 @@
 import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { Ctx, MessagePattern, NatsContext } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  Payload,
+} from '@nestjs/microservices';
+import { NatsJetStreamContext } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
 
 @Controller()
 export class AppController {
@@ -12,8 +18,8 @@ export class AppController {
   }
 
   @MessagePattern('get-all-cat')
-  getAllCat(@Ctx() context: NatsContext) {
-    console.log(`Subject: ${context.getSubject()}`);
+  getAllCat(@Ctx() @Ctx() context: NatsJetStreamContext) {
+    console.log('Received: ' + context.message.subject);
     const cats = [
       {
         id: 1,
@@ -21,5 +27,28 @@ export class AppController {
       },
     ];
     return cats;
+  }
+
+  @EventPattern('cat.hello')
+  public async catHello(@Ctx() context: NatsJetStreamContext) {
+    context.message.ack();
+    console.log('Received: ' + context.message.subject);
+  }
+
+  @EventPattern('cat.msg')
+  public async catMsg(@Ctx() context: NatsJetStreamContext) {
+    context.message.ack();
+    console.log('Received: ' + context.message.subject);
+  }
+
+  @MessagePattern('cat.get')
+  async catGet(@Payload() data: any, @Ctx() context: NatsJetStreamContext) {
+    console.log('Received: ' + context.message.subject);
+    console.log(data);
+    // context.message.ack();
+    return {
+      id: 1,
+      name: 'TOM',
+    };
   }
 }

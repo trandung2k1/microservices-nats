@@ -1,13 +1,13 @@
-import { Controller, Get, Inject } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { AppService } from './app.service';
-import { ClientProxy } from '@nestjs/microservices';
-// import { lastValueFrom } from 'rxjs';
+import { NatsJetStreamClientProxy } from '@nestjs-plugins/nestjs-nats-jetstream-transport';
 
 @Controller()
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    @Inject('CAT_SERVICE') private client: ClientProxy,
+    // @Inject('CAT_SERVICE') private client: ClientProxy,
+    private client: NatsJetStreamClientProxy,
   ) {}
 
   @Get()
@@ -15,15 +15,29 @@ export class AppController {
     return this.appService.getHello();
   }
 
-  @Get('cats')
-  async getAllCat() {
-    // this.client.emit('get-all-cat', {});
+  @Get('cat-hello')
+  catHello(): string {
+    this.client.emit<string>('cat.hello', {}).subscribe((pubAck) => {
+      console.log(pubAck);
+    });
+    return 'Cat hello.';
+  }
+
+  @Get('cat-hi')
+  catHi(): string {
+    this.client.emit<string>('cat.hi', {}).subscribe((pubAck) => {
+      console.log(pubAck);
+    });
+    return 'Cat hi.';
+  }
+
+  @Get('cat-get')
+  async catGet() {
     try {
-      // const data = await lastValueFrom(this.client.send('get-all-cat', {}));
-      const data = await this.client.send('get-all-cat', {}).toPromise();
-      return data;
+      const data = await this.client.emit('get-all-cat', {}).toPromise();
+      return data?.response;
     } catch (error) {
-      throw new Error(error);
+      console.log(error);
     }
   }
 }

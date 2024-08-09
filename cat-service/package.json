@@ -15,11 +15,12 @@
     "lint": "eslint \"{src,apps,libs}/**/*.ts\" --fix"
   },
   "dependencies": {
+    "@nestjs-plugins/nestjs-nats-jetstream-transport": "^2.2.6",
     "@nestjs/common": "^10.0.0",
     "@nestjs/core": "^10.0.0",
     "@nestjs/microservices": "^10.3.10",
     "@nestjs/platform-express": "^10.0.0",
-    "nats": "^2.28.2",
+    "nats": "^2.19.0",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.8.1"
   },
