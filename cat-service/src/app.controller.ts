@@ -18,7 +18,7 @@ export class AppController {
   }
 
   @MessagePattern('get-all-cat')
-  getAllCat(@Ctx() @Ctx() context: NatsJetStreamContext) {
+  getAllCat(@Payload() data: string, @Ctx() context: NatsJetStreamContext) {
     console.log('Received: ' + context.message.subject);
     const cats = [
       {
@@ -29,8 +29,15 @@ export class AppController {
     return cats;
   }
 
+  // Background
   @EventPattern('cat.hello')
   public async catHello(@Ctx() context: NatsJetStreamContext) {
+    context.message.ack();
+    console.log('Received: ' + context.message.subject);
+  }
+
+  @EventPattern('cat.hi')
+  public async catHi(@Ctx() context: NatsJetStreamContext) {
     context.message.ack();
     console.log('Received: ' + context.message.subject);
   }
@@ -45,10 +52,26 @@ export class AppController {
   async catGet(@Payload() data: any, @Ctx() context: NatsJetStreamContext) {
     console.log('Received: ' + context.message.subject);
     console.log(data);
-    // context.message.ack();
     return {
       id: 1,
       name: 'TOM',
     };
   }
+
+  @MessagePattern('replace-emoji')
+  replaceEmoji(
+    @Payload() data: string,
+    @Ctx() context: NatsJetStreamContext,
+  ): string {
+    console.log('Received: ' + context.message.subject);
+    console.log('Consummer');
+    return 'Data';
+  }
+
+  // Not working Nats JetStream
+  // @EventPattern('replace-emoji')
+  // replaceEmoji(@Payload() data: string, @Ctx() context: NatsContext): string {
+  //   console.log('Consummer');
+  //   return 'Data';
+  // }
 }
